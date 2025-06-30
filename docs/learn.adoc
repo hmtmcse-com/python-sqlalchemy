@@ -20,3 +20,20 @@
 * https://docs.sqlalchemy.org/en/20/tutorial/data_insert.html
 * https://medium.com/@artur.rakhmatulin/a-little-sqlalchemy-2-0-guide-66090ea2b3f9
 * https://dev.to/devsnorte/setting-up-a-standalone-sqlalchemy-20-orm-application-298c
+
+== Note
+Give me the full code for Python SQLAlchemy
+1. Async based
+2. SQLite
+3. Model
+4. Single Item create, bulk item create
+5. Singel item update, bulk update
+6. list item without pagination and other function will be with pagination
+7. give alias and label based example
+8. use various keys for understand relationship, Foreginkey, primarykey
+9. add relationship inside a model, single and multiple, with condition, sorting
+10. add example for various agreegation function
+11. show various filtaring with and or between, less than gater than, equal
+12. show all types of join, inner, left, right, outer, full join
+13. give example for subquery
+14. show text based quary running
