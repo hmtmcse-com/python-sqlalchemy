@@ -28,7 +28,7 @@ class Book(Base):
     author = relationship("Author", back_populates="books")
 
 # ----------------- Async engine -----------------
-engine = create_async_engine("sqlite+aiosqlite:///example.db", echo=True)
+engine = create_async_engine("sqlite+aiosqlite:///example1.db", echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 # ----------------- Core operations -----------------

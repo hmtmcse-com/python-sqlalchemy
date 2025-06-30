@@ -9,7 +9,7 @@ from sqlalchemy import or_, and_, text, outerjoin  # Added outerjoin
 from datetime import datetime
 
 # Database URL for async SQLite
-DATABASE_URL = "sqlite+aiosqlite:///./async_example.db"
+DATABASE_URL = "sqlite+aiosqlite:///./example3.db"
 
 Base = declarative_base()
 
