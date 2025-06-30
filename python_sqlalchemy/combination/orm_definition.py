@@ -1,12 +1,10 @@
-import typing
 from typing import Optional, Any, Union, Callable
-
 from sqlalchemy import Integer, String, Boolean, DateTime, Date
 from sqlalchemy.orm import MappedColumn
 from sqlalchemy.orm.interfaces import _AttributeOptions
 from sqlalchemy.sql.base import SchemaEventTarget, _NoArg
 from sqlalchemy.sql.schema import _ServerOnUpdateArgument, _ServerDefaultArgument, SchemaConst
-from sqlalchemy.sql._typing import _TypeEngineArgument, _InfoType, _AutoIncrementType
+from sqlalchemy.sql._typing import _InfoType, _AutoIncrementType
 from sqlalchemy.util.typing import Literal
 
 
