@@ -13,7 +13,8 @@ def get_dependencies():
         "SQLAlchemy",
         "aiosqlite",
         "marshmallow",
-        "marshmallow-sqlalchemy"
+        "marshmallow-sqlalchemy",
+        "alembic"
     ]
 
     if env and env == "dev":

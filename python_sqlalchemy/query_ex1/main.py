@@ -1,46 +1,55 @@
 import asyncio
-
 from python_sqlalchemy.query_ex1.models import User, Post
-from python_sqlalchemy.query_ex1.async_base import and_, or_
-
+from python_sqlalchemy.query_ex1.async_base import or_
 
 async def main():
+
+    # await drop_all()
+    # await create_all()
+
     # Create user
     user = await User.create(name="John", email="john@example.com", age=30)
 
-    # Create a post
-    post = await Post.create(title="First post", user_id=user.id)
+    # # Create a post
+    await Post.create(title="First Post", user_id=user.id)
 
-    # Select with where + paginate
-    users = await User.select().where(User.age >= 18).order_by(User.name).paginate(page=1, page_size=10).list()
-    print("Users >= 18:", users)
+    # query full models
+    users = await User.select().where(User.age >= 18).list()
+    for u in users:
+        print("Full model:", u.name, u.email)
 
-    # Count
+    # query columns only
+    rows = await User.select(User.id, User.name).where(User.age >= 18).list()
+    for row in rows:
+        print("Row:", row.id, row.name)
+
+    # # joins
+    posts = await Post.select().join(User, Post.user_id == User.id).where(User.name == "John").list()
+    for post in posts:
+        print("Post:", post.title, "by", post.author.name)
+
+    # count
     count = await User.select().where(User.age >= 18).count()
     print("Count:", count)
 
-    # and_ / or_ example
+    # and/or
     filtered = await User.select().where(
         or_(
-            User.name.like("%John%"),
-            User.age > 25
+            User.age > 20,
+            User.name.like("%John%")
         )
     ).list()
-    print("Filtered:", filtered)
+    print("Filtered:", [u.name for u in filtered])
 
-    # Join posts with author
-    posts = await Post.select().join(User, Post.user_id == User.id).where(User.name == "John").list()
-    print("Posts by John:", posts)
-
-    # Update user
+    # update
     await User.update(User.id == user.id, {"name": "Johnny"})
 
-    # Bulk update
+    # bulk update
     await User.bulk_update([
         {"id": user.id, "age": 31}
     ])
 
-    # Delete user
+    # delete
     await User.delete(User.id == user.id)
 
 

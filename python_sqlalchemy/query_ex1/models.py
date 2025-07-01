@@ -1,9 +1,6 @@
-# orm/models.py
-
 from sqlalchemy import String, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .async_base import AsyncBaseModel
-
 
 class User(AsyncBaseModel):
     __tablename__ = "users"
@@ -14,7 +11,6 @@ class User(AsyncBaseModel):
     age: Mapped[int] = mapped_column(Integer)
 
     posts: Mapped[list["Post"]] = relationship(back_populates="author")
-
 
 class Post(AsyncBaseModel):
     __tablename__ = "posts"

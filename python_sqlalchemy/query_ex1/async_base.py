@@ -6,20 +6,20 @@ from sqlalchemy import select as sa_select, delete as sa_delete, update as sa_up
 
 from .async_session import get_session
 
-
 class Base(DeclarativeBase):
     pass
 
-
 class AsyncQuerySet:
-    def __init__(self, model, session: AsyncSession):
+    def __init__(self, model, session: AsyncSession, fields=None):
         self.model = model
         self.session = session
-        self._query = sa_select(model)
+        self._fields = fields
         self._filters = []
         self._order = []
         self._group = []
         self._joins = []
+        self._limit = None
+        self._offset = None
 
     def where(self, *conditions):
         self._filters.extend(conditions)
@@ -37,23 +37,20 @@ class AsyncQuerySet:
         self._joins.append((target, onclause, isouter))
         return self
 
-    def fields(self, *columns):
-        self._query = sa_select(*columns)
-        return self
-
     def paginate(self, page=1, page_size=20):
-        self._query = self._query.limit(page_size).offset((page - 1) * page_size)
+        self._limit = page_size
+        self._offset = (page - 1) * page_size
         return self
 
     async def count(self):
         q = sa_select(func.count()).select_from(self.model)
         if self._filters:
             q = q.where(*self._filters)
-        result = await self.session.scalar(q)
-        return result
+        return await self.session.scalar(q)
 
     async def list(self):
-        q = self._query
+        q = sa_select(*(self._fields if self._fields else [self.model]))
+
         if self._filters:
             q = q.where(*self._filters)
         if self._order:
@@ -62,28 +59,40 @@ class AsyncQuerySet:
             q = q.group_by(*self._group)
         for target, onclause, isouter in self._joins:
             q = q.join(target, onclause=onclause, isouter=isouter)
+        if self._limit:
+            q = q.limit(self._limit)
+        if self._offset:
+            q = q.offset(self._offset)
         result = await self.session.execute(q)
-        return result.unique().scalars().all()
+        return (
+            result.unique().scalars().all()
+            if not self._fields
+            else result.all()
+        )
 
     async def first(self):
-        q = self._query
+        q = sa_select(*(self._fields if self._fields else [self.model]))
         if self._filters:
             q = q.where(*self._filters)
         if self._order:
             q = q.order_by(*self._order)
         for target, onclause, isouter in self._joins:
             q = q.join(target, onclause=onclause, isouter=isouter)
-        result = await self.session.execute(q.limit(1))
-        return result.scalars().first()
-
+        q = q.limit(1)
+        result = await self.session.execute(q)
+        return (
+            result.unique().scalars().first()
+            if not self._fields
+            else result.first()
+        )
 
 class AsyncBaseModel(Base):
     __abstract__ = True
 
     @classmethod
-    def select(cls):
+    def select(cls, *fields):
         session = get_session()
-        return AsyncQuerySet(cls, session)
+        return AsyncQuerySet(cls, session, fields=fields if fields else None)
 
     @classmethod
     async def create(cls, **kwargs):
@@ -116,5 +125,5 @@ class AsyncBaseModel(Base):
             await session.execute(stmt)
 
 
-# expose AND / OR
+# expose
 __all__ = ["AsyncBaseModel", "and_", "or_"]
