@@ -24,9 +24,9 @@ async def main():
         print("Row:", row.id, row.name)
 
     # # joins
-    posts = await Post.select().join(User, Post.user_id == User.id).where(User.name == "John").list()
-    for post in posts:
-        print("Post:", post.title, "by", post.author.name)
+    # posts = await Post.select().join(User, Post.user_id == User.id).where(User.name == "John").list()
+    # for post in posts:
+    #     print("Post:", post.title, "by", post.author.name)
 
     # count
     count = await User.select().where(User.age >= 18).count()

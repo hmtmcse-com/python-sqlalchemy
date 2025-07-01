@@ -1,5 +1,3 @@
-# orm/async_base.py
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import select as sa_select, delete as sa_delete, update as sa_update, func, and_, or_
