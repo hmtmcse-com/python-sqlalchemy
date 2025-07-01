@@ -1,5 +1,5 @@
-from marshmallow_sqlalchemy import SQLAlchemySchema, auto_field, SQLAlchemyAutoSchema
-from marshmallow import fields
+from marshmallow_sqlalchemy import auto_field, SQLAlchemyAutoSchema
+from marshmallow import fields, EXCLUDE
 from sqlalchemy import inspect
 from python_sqlalchemy.combination.model import BaseModel, User
 
@@ -39,22 +39,29 @@ class DTOBase(SQLAlchemyAutoSchema):
             return model(**name_value_pairs)
         return None
 
-    def to_model(self, data: dict) -> BaseModel | None:
-        validated_dict = self.load(data=data)
+    def to_model(self, data: dict, model_instance: BaseModel = None) -> BaseModel | None:
+        validated_dict = self.load(data=data, unknown=EXCLUDE)
         if not validated_dict or not isinstance(validated_dict, dict):
             return None
-        model_instance = self._get_model_instance(data)
+
+        if not model_instance:
+            model_instance = self._get_model_instance(data)
+
         if model_instance:
             for key, value in data.items():
                 if hasattr(model_instance, key):
                     setattr(model_instance, key, value)
+
         return model_instance
 
-    def validate(self, data: dict | list, many: bool = False, partial: bool = False):
-        pass
+    def validate(self, data: dict | list, many: bool = False, partial: bool = False) -> dict:
+        return super().validate(data, many=False, partial=partial)
 
     def to_dict(self, model: BaseModel | list[BaseModel], many: bool = False) -> dict:
-        pass
+        return self.dump(model, many=many)
+
+    def clean_dict(self, data: dict) -> dict:
+        return self.load(data=data, unknown=EXCLUDE)
 
 
 class UserDTO(DTOBase):

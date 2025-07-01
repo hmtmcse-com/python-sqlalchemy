@@ -9,9 +9,9 @@ async def main():
         await conn.run_sync(BaseModel.metadata.drop_all)
         await conn.run_sync(BaseModel.metadata.create_all)
 
-    # for index in range(500):
-    #     user = await User(username=f"name {index}", email=f"email{1}@email.local").save()
-    #     print(UserDTO().dump(user))
+    for index in range(500):
+        user = await User(username=f"name {index}", email=f"email{1}@email.local").save()
+        print(UserDTO().to_dict(user))
 
     data_list = [
         {"email": "touhid@gmail.com", "username": "Name"},
