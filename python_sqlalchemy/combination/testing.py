@@ -14,16 +14,14 @@ async def main():
     #     print(UserDTO().dump(user))
 
     data_list = [
-        {},
         {"email": "touhid@gmail.com", "username": "Name"},
         {"email": "touhid@gmail.com"},
+        {},
     ]
 
     for data in data_list:
-        # model = UserDTO().load(data, session=orm.sync_session())
-        model2 = User2DTO().load(data, session=orm.sync_session())
-        # print(model)
-        # await model.save()
+        model = UserDTO().to_model(data)
+        await model.save()
 
 
 if __name__ == '__main__':
