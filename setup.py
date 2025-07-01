@@ -11,7 +11,9 @@ env = os.environ.get('source')
 def get_dependencies():
     dependency = [
         "SQLAlchemy",
-        "aiosqlite"
+        "aiosqlite",
+        "marshmallow",
+        "marshmallow-sqlalchemy"
     ]
 
     if env and env == "dev":

@@ -1,18 +1,18 @@
+from dataclasses import dataclass
 from datetime import datetime
-from xmlrpc.client import DateTime
-
-from sqlalchemy.orm import DeclarativeBase, Mapped
-
+from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 from python_sqlalchemy.combination.orm import orm
 
 
-class BaseModel(DeclarativeBase):
+@dataclass(kw_only=True)
+class BaseModel(DeclarativeBase, MappedAsDataclass):
     __abstract__ = True
     _model_list = []
 
     async def save(self):
         await self.bulk_save(self._model_list)
         self._model_list.clear()
+        return self
 
     def delete(self):
         try:
@@ -45,8 +45,10 @@ class BaseModel(DeclarativeBase):
                 if models:
                     for model in models:
                         model.before_save()
-                        session.add_all(models)
-                await session.commit()
+                        session.add(models)
+                await session.flush()  # Need to study
+                await session.commit() # Need to study
+                await session.refresh(self)  # Should be configurable due to performance
                 self.after_save()
                 for model in models:
                     model.after_save()
@@ -62,8 +64,13 @@ class BaseModel(DeclarativeBase):
 
 class User(BaseModel):
     __tablename__ = "user"
-    id = orm.Column(orm.Integer(), primary_key=True)
-    username = orm.Column(orm.String(), index=True, nullable=False)
-    email = orm.Column(orm.String(), index=True, nullable=False)
-    is_active = orm.Column(orm.Boolean(), default=True)
+    id: int = orm.Column(orm.Integer(), primary_key=True, autoincrement=True, init=False)
+    username: str = orm.Column(orm.String(), index=True, nullable=False)
+    email: str = orm.Column(orm.String(), index=True, nullable=False)
+    address: str = orm.Column(orm.String(), nullable=True)
+    house: str = orm.Column(orm.String(), nullable=True)
+    road: str = orm.Column(orm.String())
+    is_active: bool = orm.Column(orm.Boolean(), default=True)
     created_at = orm.Column(orm.DateTime(), default=datetime.now)
+
+

@@ -22,9 +22,11 @@ class ORMDefinition:
             compare: Union[_NoArg, bool] = _NoArg.NO_ARG,
             kw_only: Union[_NoArg, bool] = _NoArg.NO_ARG,
             hash: Union[_NoArg, bool, None] = _NoArg.NO_ARG,  # noqa: A002
+
             nullable: Optional[
                 Union[bool, Literal[SchemaConst.NULL_UNSPECIFIED]]
             ] = SchemaConst.NULL_UNSPECIFIED,
+
             primary_key: Optional[bool] = False,
             deferred: Union[_NoArg, bool] = _NoArg.NO_ARG,
             deferred_group: Optional[str] = None,
@@ -49,6 +51,12 @@ class ORMDefinition:
             sort_order: Union[_NoArg, int] = _NoArg.NO_ARG,
             **kw: Any,
     ) -> MappedColumn[Any]:
+
+        print(nullable)
+        if nullable is None or nullable is True or nullable == SchemaConst.NULL_UNSPECIFIED:
+            init = False
+            nullable = True
+
         return MappedColumn(
             __name_pos,
             __type_pos,
